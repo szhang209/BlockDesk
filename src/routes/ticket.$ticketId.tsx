@@ -37,17 +37,28 @@ function TicketDetails() {
   const loadTicketDetails = async () => {
     setLoading(true);
     try {
+<<<<<<< HEAD
       // Load from localStorage and find our ticket
       const userTickets = JSON.parse(localStorage.getItem('blockdesk-tickets') || '[]');
       
       // Find the ticket by ID (from user tickets only)
+=======
+      // Load tickets from localStorage and find the specific ticket
+      const userTickets = JSON.parse(localStorage.getItem('blockdesk-tickets') || '[]');
+      
+      // Find the specific ticket by ID (only from user-created tickets)
+>>>>>>> 5531b19806838d3415103cadade86026ff0a3927
       const foundTicket = userTickets.find((t: any) => t.id === ticketId);
       
       if (!foundTicket) {
         throw new Error('Ticket not found');
       }
       
+<<<<<<< HEAD
       // TODO: use real contract when deployed
+=======
+      // TODO: Replace with actual contract calls when deployed
+>>>>>>> 5531b19806838d3415103cadade86026ff0a3927
       // if (contract) {
       //   const ticketData = await contract.getTicket(ticketId);
       //   const events = await contract.getTicketEvents(ticketId);
