@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreateTicketRouteImport } from './routes/create-ticket'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -23,11 +22,6 @@ import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
 import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ssr.data-only'
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -94,7 +88,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/create-ticket': typeof CreateTicketRoute
   '/dashboard': typeof DashboardRoute
-  '/test': typeof TestRoute
   '/ticket/$ticketId': typeof TicketTicketIdRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -109,7 +102,6 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/create-ticket': typeof CreateTicketRoute
   '/dashboard': typeof DashboardRoute
-  '/test': typeof TestRoute
   '/ticket/$ticketId': typeof TicketTicketIdRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -125,7 +117,6 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/create-ticket': typeof CreateTicketRoute
   '/dashboard': typeof DashboardRoute
-  '/test': typeof TestRoute
   '/ticket/$ticketId': typeof TicketTicketIdRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
@@ -142,7 +133,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/create-ticket'
     | '/dashboard'
-    | '/test'
     | '/ticket/$ticketId'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -157,7 +147,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/create-ticket'
     | '/dashboard'
-    | '/test'
     | '/ticket/$ticketId'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -172,7 +161,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/create-ticket'
     | '/dashboard'
-    | '/test'
     | '/ticket/$ticketId'
     | '/demo/api/names'
     | '/demo/start/api-request'
@@ -188,7 +176,6 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   CreateTicketRoute: typeof CreateTicketRoute
   DashboardRoute: typeof DashboardRoute
-  TestRoute: typeof TestRoute
   TicketTicketIdRoute: typeof TicketTicketIdRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
@@ -201,13 +188,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -300,7 +280,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   CreateTicketRoute: CreateTicketRoute,
   DashboardRoute: DashboardRoute,
-  TestRoute: TestRoute,
   TicketTicketIdRoute: TicketTicketIdRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,
