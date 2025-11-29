@@ -1,44 +1,37 @@
 {
-  "name": "BlockDesk",
-  "private": true,
-  "type": "module",
+  "name": "ticketing-dapp",
+  "version": "1.0.0",
+  "description": "Decentralized IT Ticketing System - Group 12 (CSC196D)",
+  "main": "truffle-config.js",
   "scripts": {
-    "dev": "vite dev --port 3000",
-    "build": "vite build",
-    "serve": "vite preview",
-    "test": "vitest run"
+    "test": "truffle test",
+    "compile": "truffle compile",
+    "migrate": "truffle migrate --reset",
+    "ganache": "ganache",
+    "client": "cd client && npm start"
   },
+  "keywords": [
+    "solidity",
+    "dapp",
+    "blockchain",
+    "truffle",
+    "ganache"
+  ],
+  "author": "Group 12",
+  "license": "MIT",
   "dependencies": {
-    "@radix-ui/react-slot": "^1.2.4",
-    "@tailwindcss/vite": "^4.1.16",
-    "@tanstack/react-devtools": "^0.7.0",
-    "@tanstack/react-router": "^1.132.0",
-    "@tanstack/react-router-devtools": "^1.132.0",
-    "@tanstack/react-router-ssr-query": "^1.131.7",
-    "@tanstack/react-start": "^1.132.0",
-    "@tanstack/router-plugin": "^1.132.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "ethers": "^6.15.0",
-    "lucide-react": "^0.544.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "tailwind-merge": "^3.0.2",
-    "tailwindcss": "^4.1.16",
-    "tw-animate-css": "^1.3.6",
-    "vite-tsconfig-paths": "^5.1.4"
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
+    "@mui/x-data-grid": "^8.20.0",
+    "@truffle/hdwallet-provider": "^2.0.16",
+    "dotenv": "^16.4.5",
+    "nft.storage": "^7.2.0",
+    "tar": "^7.5.2"
   },
   "devDependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/react": "^16.2.0",
-    "@types/node": "^22.10.2",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^5.0.4",
-    "jsdom": "^27.0.0",
-    "typescript": "^5.7.2",
-    "vite": "^7.1.7",
-    "vitest": "^3.0.5",
-    "web-vitals": "^5.1.0"
+    "ganache": "^6.4.5",
+    "truffle": "^5.5.7"
   }
 }
