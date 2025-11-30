@@ -95,7 +95,7 @@ function TicketDetails() {
         }
       }
 
-      // 4. Merge Data (State and Event)
+      // Merge Data (State and Event)
       const formattedTicket: Ticket = {
         id: rawTicket.id.toString(),
         
@@ -278,19 +278,18 @@ function TicketDetails() {
     if (!contract) return;
     setUpdating(true);
     try {
-      let tx;
-      const options = { gasLimit: 500000 };
+      let tx;;
 
       // Use specific contract functions for resolved and closed statuses
       if (newStatus === TicketStatus.RESOLVED) {
-        tx = await contract.resolveTicket(ticketId, options);
+        tx = await contract.resolveTicket(ticketId);
       } else if (newStatus === TicketStatus.CLOSED) {
-        tx = await contract.closeTicket(ticketId, options);
+        tx = await contract.closeTicket(ticketId);
       } else {
         // Use updateStatus with index
         let statusIdx = 0;
         if(newStatus === TicketStatus.IN_PROGRESS) statusIdx = 1;
-        tx = await contract.updateStatus(ticketId, statusIdx, options);
+        tx = await contract.updateStatus(ticketId, statusIdx);
       }
       
       await tx.wait();
