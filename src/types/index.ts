@@ -1,4 +1,5 @@
 export interface Ticket {
+  assignedTo: any;
   id: string;
   title: string;
   description: string;
@@ -7,6 +8,14 @@ export interface Ticket {
   agent?: string;
   createdAt: number;
   attachment?: string; // IPFS hash
+}
+
+export interface Comment {
+  id: string;
+  ticketId: string;
+  author: string;
+  content: string;
+  createdAt: number;
 }
 
 export enum TicketStatus {
@@ -28,7 +37,6 @@ export interface TicketEvent {
 
 export enum UserRole {
   USER = "User",
-  AGENT = "Agent", 
   MANAGER = "Manager"
 }
 

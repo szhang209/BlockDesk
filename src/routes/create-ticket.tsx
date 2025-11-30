@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { uploadToIPFS, uploadTextToIPFS } from '@/lib/ipfs';
 
 export const Route = createFileRoute('/create-ticket')({
   component: CreateTicket,
@@ -29,7 +30,8 @@ interface FormErrors {
 }
 
 function CreateTicket() {
-  const { user, isConnected } = useWeb3();
+  // Destructure 'contract' to enable blockchain interactions
+  const { user, isConnected, contract } = useWeb3();
   const { addNotification } = useNotifications();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
@@ -70,70 +72,40 @@ function CreateTicket() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const uploadToIPFS = async (file: File): Promise<string> => {
-    // Mock IPFS upload - need to use actual service later like Web3.Storage
+  const handleIPFSUpload = async (file: File) => {
     setUploadingToIPFS(true);
     
     try {
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Create a fake hash based on file name for now
-      const mockHash = `QmX${Math.random().toString(36).substring(2, 15)}${file.name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 10)}`;
-      return mockHash;
+      const result = await uploadToIPFS(file);
+      return result;
     } catch (error) {
+      console.error('IPFS upload error:', error);
       throw new Error('Failed to upload file to IPFS');
     } finally {
       setUploadingToIPFS(false);
     }
   };
 
-  const submitTicket = async (attachmentHash?: string) => {
+  const submitTicket = async (descriptionHash: string, attachmentHash?: string) => {
+    if (!contract) throw new Error('Smart contract not connected.');
+
     try {
-      // For now just save to localStorage since we don't have the contract ready
-      const newTicket = {
-        id: Math.random().toString(36).substring(2, 15),
-        title: formData.title,
-        description: formData.description,
-        status: 'Open' as const,
-        creator: user?.address || 'Unknown',
-        createdAt: Date.now(),
-        ...(attachmentHash && { attachment: attachmentHash })
-      };
-
-      // Get existing tickets from localStorage
-      const existingTickets = JSON.parse(localStorage.getItem('blockdesk-tickets') || '[]');
-      
-      // Add new ticket
-      const updatedTickets = [newTicket, ...existingTickets];
-      
-      // Save back to localStorage
-      localStorage.setItem('blockdesk-tickets', JSON.stringify(updatedTickets));
-      
-      // Create a mock transaction hash for demo
-      const mockTxHash = `0x${Math.random().toString(16).substring(2, 66)}`;
-      return mockTxHash;
-      
-      /* Original blockchain code - uncomment this when contract is deployed:
-      if (!contract) {
-        throw new Error('Smart contract not connected');
-      }
-
-      // Call smart contract function
       const tx = await contract.createTicket(
         formData.title,
-        formData.description,
-        attachmentHash || ''
+        descriptionHash, // Store IPFS hash instead of description text
+        attachmentHash || '',
       );
 
-      // Wait for transaction confirmation
-      await tx.wait();
+      // Wait for receipt to ensure block is mined
+      const receipt = await tx.wait();
+      
+      // Log the receipt to see the new Ticket ID
+      console.log("Transaction Receipt:", receipt);
       
       return tx.hash;
-      */
     } catch (error: any) {
       console.error('Error submitting ticket:', error);
-      throw new Error(error.message || 'Failed to submit ticket');
+      throw new Error(error.reason || error.message || 'Failed to submit ticket');
     }
   };
 
@@ -165,19 +137,40 @@ function CreateTicket() {
     
     try {
       let attachmentHash: string | undefined;
+      let descriptionHash: string;
+
+      // Upload description to IPFS
+      addNotification({
+        type: 'info',
+        title: 'Processing description...',
+        message: 'Uploading to IPFS'
+      });
+      
+      const descriptionResult = await uploadTextToIPFS(formData.description);
+      descriptionHash = descriptionResult.hash;
+      
+      // Store description in localStorage
+      localStorage.setItem(`ipfs_${descriptionHash}`, formData.description);
+      console.log('✓ Description uploaded to IPFS');
 
       // Upload attachment to IPFS if present
       if (formData.attachment) {
         addNotification({
           type: 'info',
-          title: 'Uploading to IPFS...',
-          message: 'Your file is being uploaded to decentralized storage'
+          title: 'Processing file...',
+          message: 'Your file is being prepared'
         });
-        attachmentHash = await uploadToIPFS(formData.attachment);
+        const result = await handleIPFSUpload(formData.attachment);
+        attachmentHash = result.hash;
+        
+        if (result.dataUrl) {
+          localStorage.setItem(`ipfs_${result.hash}`, result.dataUrl);
+          console.log('✓ Attachment uploaded to IPFS');
+        }
       }
 
       // Submit ticket to blockchain
-      const txHash = await submitTicket(attachmentHash);
+      const txHash = await submitTicket(descriptionHash, attachmentHash);
 
       // Success! Show notification and redirect
       addNotification({
@@ -228,9 +221,9 @@ function CreateTicket() {
   if (!isConnected || !user) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
+        <div>
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <div className="text-yellow-600 mb-2">
+            <div className="text-yellow-600 mb-4">
               <User size={48} className="mx-auto mb-4" />
             </div>
             <h2 className="text-xl font-semibold text-yellow-800 mb-2">
@@ -282,9 +275,12 @@ function CreateTicket() {
                   {errors.title}
                 </p>
               )}
-              <p className="mt-1 text-xs text-gray-500">
-                {formData.title.length}/100 characters
-              </p>
+              {/* Character Counter - Right Aligned */}
+              <div className="flex justify-end">
+                <p className="mt-1 text-xs text-gray-500">
+                  {formData.title.length}/100 characters
+                </p>
+              </div>
             </div>
 
             {/* Description */}
@@ -310,9 +306,12 @@ function CreateTicket() {
                   {errors.description}
                 </p>
               )}
-              <p className="mt-1 text-xs text-gray-500">
-                {formData.description.length}/1000 characters
-              </p>
+              {/* Character Counter - Right Aligned */}
+              <div className="flex justify-end">
+                <p className="mt-1 text-xs text-gray-500">
+                  {formData.description.length}/1000 characters
+                </p>
+              </div>
             </div>
 
             {/* File Attachment */}

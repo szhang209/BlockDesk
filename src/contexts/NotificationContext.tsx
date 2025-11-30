@@ -23,7 +23,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const addNotification = (notification: Omit<Notification, 'id'>) => {
     const id = Math.random().toString(36).substring(2, 15);
-    const duration = notification.duration ?? 5000; // Default 5 seconds
+    const duration = notification.duration ?? 5000;
     const newNotification: Notification = {
       ...notification,
       id,
@@ -32,7 +32,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
     setNotifications(prev => [...prev, newNotification]);
 
-    // Auto remove after duration (if not persistent)
+    // Auto remove after duration
     if (duration > 0) {
       setTimeout(() => {
         removeNotification(id);
